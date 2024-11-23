@@ -8,9 +8,9 @@
 
 int main() {
 	setlocale(LC_ALL, "Rus");
-	int n = 2;
-	int c = 0, *deg, *loop;
-	int** G = NULL;
+	int n = 5, count = 0, count_i = 0, sum = 0;
+	int* deg = NULL, * loop = NULL, * deg_i = NULL, * loop_i = NULL;
+	int** G = NULL, ** I = NULL;
 	printf("Введите количество вершин: ");
 	srand(time(NULL));
 
@@ -29,7 +29,7 @@ int main() {
 		for (int j = i; j < n; ++j) {
 			G[i][j] = rand() % 2;
 			G[j][i] = G[i][j];
-			c += G[i][j];
+			count += G[i][j];
 
 		}
 	}
@@ -56,7 +56,65 @@ int main() {
 		//printf("%d %d\n", deg[i], loop[i]);
 	}
 
+	printf("\nРазмерM = %d\n\n", count);
+
+	I = (int**)malloc(n * sizeof(int*));
+	deg_i = (int*)malloc(count * sizeof(int));
+	loop_i = (int*)malloc(count * sizeof(int));
+
+	for (int i = 0; i < n; i++) {
+		I[i] = (int*)malloc(count * sizeof(int));
+		for (int j = 0; j < count; j++) {
+			I[i][j] = 0;
+		}
+	}
+
+
+	for (int i = 0; i < n; i++) {
+		for (int j = i; j < n; j++) {
+			if (G[i][j] == 1) {
+				I[i][count_i] = 1;
+				I[j][count_i] = 1;
+				count_i++;
+			}
+		}
+	}
+
+	printf("  ");
+	for (int i = 0; i < count; ++i) printf("%c ", i + 97);
 	printf("\n");
-	printf("%d", c);
+
+	for (int i = 0; i < n; i++) {
+		printf("%d ", i);
+		for (int j = 0; j < count; j++) {
+			printf("%d ", I[i][j]);
+		}
+		printf("\n");
+	}
+
+
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < count; j++) {
+			if (I[i][j] == 1) {
+				deg_i[i] += I[i][j];
+				for (int k = 0; k < n; k++) {
+					sum += I[k][j];
+				}
+				if (sum == 1) {
+					loop_i[i] += 1;
+				}
+				sum = 0;
+			}
+		}
+	}
+	printf("\n");
+	for (int i = 0; i < n; ++i) {
+		if (deg_i[i] - loop_i[i] == 0) printf("Вершина %d - изолированная\n", i);
+		if (deg_i[i] - loop_i[i] == 1) printf("Вершина %d - концевая\n", i);
+		if (deg_i[i] - loop_i[i] == n - 1) printf("Вершина %d - доминирующая\n", i);
+		//printf("%d %d\n", deg[i], loop[i]);
+	}
+	printf("\nРазмерI = %d\n", count_i);
 	return 0;
 }
